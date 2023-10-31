@@ -90,6 +90,7 @@ class TestDbtDiffer(unittest.TestCase):
             extra_columns=ANY,
             where=where,
             skip_null_keys=True,
+            sample_exclusive_rows=False
         )
         self.assertEqual(len(mock_diff_tables.call_args[1]["extra_columns"]), 2)
         self.assertEqual(mock_connect.call_count, 2)
@@ -135,6 +136,7 @@ class TestDbtDiffer(unittest.TestCase):
             extra_columns=ANY,
             where=where,
             skip_null_keys=True,
+            sample_exclusive_rows=False
         )
         self.assertEqual(len(mock_diff_tables.call_args[1]["extra_columns"]), 1)
         self.assertEqual(mock_connect.call_count, 2)
@@ -165,6 +167,7 @@ class TestDbtDiffer(unittest.TestCase):
             where_filter=where,
             include_columns=[],
             exclude_columns=[],
+            sample_exclusive_rows=False
         )
         with patch("data_diff.dbt.connect_to_table", side_effect=[mock_table1, mock_table2]) as mock_connect:
             _local_diff(diff_vars)
@@ -177,6 +180,7 @@ class TestDbtDiffer(unittest.TestCase):
             extra_columns=ANY,
             where=where,
             skip_null_keys=True,
+            sample_exclusive_rows=False
         )
         self.assertEqual(len(mock_diff_tables.call_args[1]["extra_columns"]), 2)
         self.assertEqual(mock_connect.call_count, 2)

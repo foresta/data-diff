@@ -63,6 +63,7 @@ class TDiffVars(pydantic.BaseModel):
     exclude_columns: List[str]
     dbt_model: Optional[str] = None
     stats_flag: bool = False
+    sample_exclusive_rows: bool = False
 
 
 def dbt_diff(
@@ -76,6 +77,7 @@ def dbt_diff(
     where_flag: Optional[str] = None,
     stats_flag: bool = False,
     columns_flag: Optional[Tuple[str]] = None,
+    sample_exclusive_rows: bool = False,
 ) -> None:
     print_version_info()
     diff_threads = []
@@ -115,7 +117,7 @@ def dbt_diff(
             if log_status_handler:
                 log_status_handler.set_prefix(f"Diffing {model.alias} \n")
 
-            diff_vars = _get_diff_vars(dbt_parser, config, model, where_flag, stats_flag, columns_flag)
+            diff_vars = _get_diff_vars(dbt_parser, config, model, where_flag, stats_flag, columns_flag, sample_exclusive_rows)
 
             # we won't always have a prod path when using state
             # when the model DNE in prod manifest, skip the model diff
@@ -169,6 +171,7 @@ def _get_diff_vars(
     where_flag: Optional[str] = None,
     stats_flag: bool = False,
     columns_flag: Optional[Tuple[str]] = None,
+    sample_exclusive_rows: bool = False
 ) -> TDiffVars:
     cli_columns = list(columns_flag) if columns_flag else []
     dev_database = model.database
@@ -204,6 +207,7 @@ def _get_diff_vars(
         include_columns=cli_columns or datadiff_model_config.include_columns,
         exclude_columns=[] if cli_columns else datadiff_model_config.exclude_columns,
         stats_flag=stats_flag,
+        sample_exclusive_rows=sample_exclusive_rows
     )
 
 
@@ -307,6 +311,7 @@ def _local_diff(diff_vars: TDiffVars, json_output: bool = False) -> None:
         extra_columns=extra_columns,
         where=diff_vars.where_filter,
         skip_null_keys=True,
+        sample_exclusive_rows=diff_vars.sample_exclusive_rows,
     )
     if json_output:
         # drain the iterator to get accumulated stats in diff.info_tree

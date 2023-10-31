@@ -323,6 +323,7 @@ def main(conf, run, **kw):
                 where_flag=kw["where"],
                 stats_flag=kw["stats"],
                 columns_flag=kw["columns"],
+                sample_exclusive_rows=kw["sample_exclusive_rows"],
             )
         else:
             return _data_diff(
